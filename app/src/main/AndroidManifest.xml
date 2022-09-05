@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BikePathAnomalyDetection"
-        tools:targetApi="31">
+        tools:targetApi="30">
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -27,7 +27,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" />
+            android:value="AIzaSyBeQMASqIPJGh3_8nehbtbndqbwJg70UKU" />
 
         <activity
             android:name=".MapsActivity"
