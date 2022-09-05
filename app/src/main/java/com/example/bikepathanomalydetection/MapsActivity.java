@@ -30,6 +30,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final long MIN_TIME = 1000; // 1 second
     private final long MIN_DIST = 5; // 5 meters
+    private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
+    private final long STREET_ZOOM = 18; // Zoom in to street
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationListener = location -> {
             mMap.clear();
             LatLng userPos = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(userPos).title("You!"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(userPos));
+            mMap.addMarker(new MarkerOptions().position(userPos).title("My position!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userPos, STREET_ZOOM));
         };
 
         try {
