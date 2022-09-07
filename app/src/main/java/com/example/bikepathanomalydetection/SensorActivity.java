@@ -94,9 +94,6 @@ public class SensorActivity implements SensorEventListener {
                     }
                 }
 
-                for (float value: filterResultAccelerometer) {
-                    System.out.println("[SYSTEM] Accelerometer " + value);
-                }
                 break;
             case Sensor.TYPE_GYROSCOPE:
                 for(int i = 0; i < 3; i++) {
