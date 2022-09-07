@@ -39,4 +39,7 @@ dependencies {
 
     implementation 'com.karumi:dexter:6.2.1'
 
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.29'
+    runtimeOnly "mysql:mysql-connector-java:8.0.29"
+
 }

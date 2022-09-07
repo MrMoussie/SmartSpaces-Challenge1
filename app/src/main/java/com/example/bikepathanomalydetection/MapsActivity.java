@@ -89,6 +89,16 @@ public class MapsActivity extends AppCompatActivity {
     private void init() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
 
+        Thread thread = new Thread(() -> {
+            try  {
+                System.out.println(SQL.getConnection());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
+
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
 
