@@ -11,7 +11,7 @@ import uk.me.berndporr.iirj.*;
  */
 public class SensorActivity implements SensorEventListener {
 
-    //AveragingVariables
+    //AveragingVariables:
     final int arraySize = 7;
     int oldestIndexAccelerometer = 0;
     private final float[] accelerometerValues = new float[3*arraySize];
