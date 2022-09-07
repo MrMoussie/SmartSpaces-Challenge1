@@ -10,17 +10,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.ClusterManager;
 import com.karumi.dexter.Dexter;
@@ -34,7 +30,6 @@ public class MapsActivity extends AppCompatActivity {
 
     private ClusterManager<Marker> clusterManager;
     private SensorManager sensorManager;
-    private LocationManager locationManager;
 
     // MAPS
     private final long MIN_TIME = 1000; // 1 second
@@ -55,7 +50,6 @@ public class MapsActivity extends AppCompatActivity {
         client = LocationServices.getFusedLocationProviderClient(this);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         Dexter.withContext(getApplicationContext())
                 .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -96,15 +90,7 @@ public class MapsActivity extends AppCompatActivity {
         googleMap.setOnMarkerClickListener(this.clusterManager);
         googleMap.setOnCameraIdleListener(this.clusterManager);
 
-//        LocationListener locationListener = location -> {
-//            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), STREET_ZOOM));
-//        };
-//
-//        try {
-//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, locationListener);
-//        } catch {
-//
-//        }
+        // TODO fetch location
     }
 
     /**
