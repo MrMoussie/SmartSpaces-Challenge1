@@ -32,6 +32,9 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+/**
+ * This class contains the main Google Maps activity and location tracking, as well as other visualisations.
+ */
 public class MapsActivity extends AppCompatActivity {
 
     // Managers
@@ -79,9 +82,12 @@ public class MapsActivity extends AppCompatActivity {
                 }).check();
     }
 
+    /**
+     * Initialization method for this class.
+     * This method sets up permissions, tasks and initializes event listeners and managers.
+     */
     private void init() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
 
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
@@ -98,13 +104,16 @@ public class MapsActivity extends AppCompatActivity {
      * @param googleMap maps object passed when maps is ready
      */
     private void onMapReady(GoogleMap googleMap) {
+        // Setup cluster functionality
         this.clusterManager = new ClusterManager<>(this, googleMap);
         googleMap.setOnMarkerClickListener(this.clusterManager);
         googleMap.setOnCameraIdleListener(this.clusterManager);
 
+        // Setup location requests with fixed interval time
         locationRequest = new LocationRequest();
         locationRequest.setInterval(INTERVAL_TIME);
         locationRequest.setFastestInterval(INTERVAL_TIME);
+        locationRequest.setSmallestDisplacement(1);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationCallback mLocationCallback = new LocationCallback() {
@@ -122,9 +131,7 @@ public class MapsActivity extends AppCompatActivity {
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             //Location Permission already granted
             client.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());

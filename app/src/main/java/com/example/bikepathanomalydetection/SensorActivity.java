@@ -87,11 +87,15 @@ public class SensorActivity implements SensorEventListener {
                             arrayIndex++;
                         }
                     }
-                    if(filterResultAccelerometer.size()<30) {
+                    if(filterResultAccelerometer.size()<3000) {
                         filterResultAccelerometer.add(convolutionX);
                         filterResultAccelerometer.add(convolutionY);
                         filterResultAccelerometer.add(convolutionZ);
                     }
+                }
+
+                for (float value: filterResultAccelerometer) {
+                    System.out.println("[SYSTEM] Accelerometer " + value);
                 }
                 break;
             case Sensor.TYPE_GYROSCOPE:
@@ -140,12 +144,13 @@ public class SensorActivity implements SensorEventListener {
                             arrayIndex++;
                         }
                     }
-                    if(filterResultGyro.size()<30) {
+                    if(filterResultGyro.size()<3000) {
                         filterResultGyro.add(convolutionX);
                         filterResultGyro.add(convolutionY);
                         filterResultGyro.add(convolutionZ);
                     }
                 }
+
                 break;
         }
     }
