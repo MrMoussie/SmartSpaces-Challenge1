@@ -11,12 +11,18 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.WindowManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.ClusterManager;
 import com.karumi.dexter.Dexter;
@@ -28,17 +34,20 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 public class MapsActivity extends AppCompatActivity {
 
+    // Managers
     private ClusterManager<Marker> clusterManager;
     private SensorManager sensorManager;
 
-    // MAPS
-    private final long MIN_TIME = 1000; // 1 second
-    private final long MIN_DIST = 5; // 5 meters
+    // Maps
     private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
-    private final long STREET_ZOOM = 18; // Zoom in to street
-
+    private final long STREET_ZOOM = 15; // Zoom in to street
     SupportMapFragment smf;
     FusedLocationProviderClient client;
+
+    // Location Requests
+    private final long INTERVAL_TIME = 5000; // 1 second
+    LocationRequest locationRequest;
+    Location lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +69,8 @@ public class MapsActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {}
+                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                    }
 
                     @Override
                     public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
@@ -70,7 +80,8 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private void init() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
 
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
@@ -83,6 +94,7 @@ public class MapsActivity extends AppCompatActivity {
 
     /**
      * Initializes the cluster manager when the map is ready
+     *
      * @param googleMap maps object passed when maps is ready
      */
     private void onMapReady(GoogleMap googleMap) {
@@ -90,15 +102,45 @@ public class MapsActivity extends AppCompatActivity {
         googleMap.setOnMarkerClickListener(this.clusterManager);
         googleMap.setOnCameraIdleListener(this.clusterManager);
 
-        // TODO fetch location
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(INTERVAL_TIME);
+        locationRequest.setFastestInterval(INTERVAL_TIME);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationCallback mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult.getLastLocation() != null) {
+                    lastLocation = locationResult.getLastLocation();
+
+                    //Place current location marker
+                    setAnomalyMark(lastLocation.getLatitude(), lastLocation.getLongitude());
+
+                    //move map camera
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), STREET_ZOOM));
+                }
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            //Location Permission already granted
+            client.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
+            googleMap.setMyLocationEnabled(true);
+        } else {
+            // TODO Request Location Permission
+        }
     }
 
     /**
      * This function sets a marker on the map and adds it to the cluster manager
+     *
      * @param lat latitude as a double
      * @param lng longitude as a double
      */
-    public void setAnomalyMark (double lat, double lng) {
+    public void setAnomalyMark(double lat, double lng) {
         if (this.clusterManager != null) {
             Marker anomalyMark = new Marker(lat, lng, "Anomaly", "Unknown");
             this.clusterManager.addItem(anomalyMark);
