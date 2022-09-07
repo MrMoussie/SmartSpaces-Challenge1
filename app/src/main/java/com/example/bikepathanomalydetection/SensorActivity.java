@@ -3,11 +3,11 @@ package com.example.bikepathanomalydetection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
+/**
+ * This class implements the SensorEventListener class and listens for sensor events.
+ */
 public class SensorActivity implements SensorEventListener {
 
     //AveragingVariables
@@ -44,12 +44,10 @@ public class SensorActivity implements SensorEventListener {
 
         switch(sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
-                System.out.println(Arrays.toString(sensorEvent.values));
-
                 for (int i = 0; i < 3; i++) {
                     accelerometerValues[oldestIndexAccelerometer*3+i] = (sensorEvent.values[i]);
                 }
-                oldestIndexAccelerometer = (oldestIndexAccelerometer+1)%arraySize;
+                oldestIndexAccelerometer = (oldestIndexAccelerometer+1) % arraySize;
                 if (accelerometerValues[3*arraySize-1] != 0) {
                     sumX = 0;
                     sumY = 0;
@@ -94,12 +92,8 @@ public class SensorActivity implements SensorEventListener {
                         filterResultAccelerometer.add(convolutionY);
                         filterResultAccelerometer.add(convolutionZ);
                     }
-
-                    System.out.println(Arrays.toString(sensorEvent.values));
-
                 }
                 break;
-
             case Sensor.TYPE_GYROSCOPE:
                 for(int i = 0; i < 3; i++) {
                     gyroscopeValues[oldestIndexGyro*3+i] = sensorEvent.values[i];
