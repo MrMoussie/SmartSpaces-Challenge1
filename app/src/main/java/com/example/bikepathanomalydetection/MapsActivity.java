@@ -181,6 +181,10 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Returns last known location of the device
+     * @return Location object
+     */
     public Location getLastLocation() {
         return this.lastLocation;
     }
