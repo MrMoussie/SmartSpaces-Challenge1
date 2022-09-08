@@ -96,12 +96,12 @@ public class MapsActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             NoSQL.makeConnection();
 
-            ArrayList<Float> arr = new ArrayList<Float>();
-            arr.add((float) 1);
-            arr.add((float) 2);
-            arr.add((float) 3);
-
-            NoSQL.saveData(new Data(1, 1, arr, arr));
+//            ArrayList<Float> arr = new ArrayList<Float>();
+//            arr.add((float) 1);
+//            arr.add((float) 2);
+//            arr.add((float) 3);
+//
+//            NoSQL.saveData(new Data(1, 1, arr, arr));
         });
 
         thread.start();
