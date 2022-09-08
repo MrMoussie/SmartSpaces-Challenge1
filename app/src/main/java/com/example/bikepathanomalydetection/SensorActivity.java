@@ -19,8 +19,10 @@ public class SensorActivity implements SensorEventListener {
     private final float[] gyroscopeValues = new float[3*arraySize];
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
-    private ArrayList clusterAcc = new ArrayList();
-    private ArrayList clusterGyr = new ArrayList();
+    private final ArrayList<Float> clusterAcc = new ArrayList<>();
+    private final ArrayList<Float> clusterGyr = new ArrayList<>();
+    private final ArrayList<Float> processedAcc = new ArrayList<>();
+    private final ArrayList<Float> processedGyro = new ArrayList<>();
 
     float sumX = 0;
     float sumY = 0;
@@ -52,7 +54,11 @@ public class SensorActivity implements SensorEventListener {
     double resultGyrY = 0;
     double resultGyrZ = 0;
 
+    private final MapsActivity mapsActivity;
 
+    public SensorActivity(MapsActivity mapsActivity) {
+        this.mapsActivity = mapsActivity;
+    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -111,8 +117,22 @@ public class SensorActivity implements SensorEventListener {
 //                        System.out.println("[Sum AccZ] " + sumZ);
                     } else {
                         if(isClusteredAcc && clusterCooldownAcc>cooldoownThresholdAcc) {
-                            // TODO send three values (x,y,z) to the database
-                            // TODO send first three entries of clusterAcc nice
+                            if (mapsActivity.getLastLocation() == null) return;
+
+                            processedAcc.clear();
+                            processedAcc.add(clusterAcc.get(0));
+                            processedAcc.add(clusterAcc.get(1));
+                            processedAcc.add(clusterAcc.get(2));
+
+                            Data data = new Data(
+                                    mapsActivity.getLastLocation().getLongitude(),
+                                    mapsActivity.getLastLocation().getLatitude(),
+                                    processedAcc,
+                                    new ArrayList<>()
+                            );
+
+                            mapsActivity.saveData(data);
+
                             System.out.println(clusterAcc.get(0) + " clustered value of Acc X");
                             System.out.println(clusterAcc.get(1) + " clustered value of Acc Y");
                             System.out.println(clusterAcc.get(2) + " clustered value of Acc Z");
@@ -180,8 +200,22 @@ public class SensorActivity implements SensorEventListener {
 //                        System.out.println("[Sum GyrZ] " + sumZ);
                     } else {
                         if (isClusteredGyr && clusterCooldownGyr>cooldownThresholdGyr) {
-                            // TODO send three values (x,y,z) to the database
-                            // TODO send the first three entries of clusterGyr
+                            if (mapsActivity.getLastLocation() == null) return;
+
+                            processedGyro.clear();
+                            processedGyro.add(clusterGyr.get(0));
+                            processedGyro.add(clusterGyr.get(1));
+                            processedGyro.add(clusterGyr.get(2));
+
+                            Data data = new Data(
+                                    mapsActivity.getLastLocation().getLongitude(),
+                                    mapsActivity.getLastLocation().getLatitude(),
+                                    new ArrayList<>(),
+                                    processedGyro
+                            );
+
+                            mapsActivity.saveData(data);
+
                             System.out.println(clusterGyr.get(0) + " clustered value of Gyro X");
                             System.out.println(clusterGyr.get(1) + " clustered value of Gyro Y");
                             System.out.println(clusterGyr.get(2) + " clustered value of Gyro Z");

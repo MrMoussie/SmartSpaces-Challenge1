@@ -109,7 +109,7 @@ public class MapsActivity extends AppCompatActivity {
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
 
         // Setup sensor activity
-        SensorEventListener sensorListener = new SensorActivity();
+        SensorEventListener sensorListener = new SensorActivity(this);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -136,7 +136,7 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult.getLastLocation() != null) {
-                    if (lastLocation != null && lastLocation.distanceTo(locationResult.getLastLocation()) < LOCATION_COMPARE_DISTANCE) return;
+//                    if (lastLocation != null && lastLocation.distanceTo(locationResult.getLastLocation()) < LOCATION_COMPARE_DISTANCE) return;
 
                     lastLocation = locationResult.getLastLocation();
 
@@ -179,6 +179,10 @@ public class MapsActivity extends AppCompatActivity {
             Marker anomalyMark = new Marker(lat, lng, ANOMALY, ANOMALY_DESCRIPTION);
             this.clusterManager.addItem(anomalyMark);
         }
+    }
+
+    public Location getLastLocation() {
+        return this.lastLocation;
     }
 
     /**
