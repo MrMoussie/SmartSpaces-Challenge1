@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class SensorActivity implements SensorEventListener {
 
     //AveragingVariables:
-    final int arraySize = 7;
+    final int arraySize = 20;
     int oldestIndexAccelerometer = 0;
     private final float[] accelerometerValues = new float[3*arraySize];
     int oldestIndexGyro = 0;
@@ -19,17 +19,24 @@ public class SensorActivity implements SensorEventListener {
     private final float[] gyroscopeValues = new float[3*arraySize];
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
-
+    private ArrayList clusterAcc = new ArrayList();
+    private ArrayList clusterGyr = new ArrayList();
 
     float sumX = 0;
     float sumY = 0;
     float sumZ = 0;
 
-    float changeFactorAccelerometer = 0.3F;
-    float thresholdAccelerometer = 0.8F;
+    float changeFactorAccelerometer = 0.6F;
+    float thresholdAccelerometer = 1.0F;
+    boolean isClusteredAcc = false;
+    boolean isClusteredGyr = false;
+    int clusterCooldownAcc = 0;
+    int clusterCooldownGyr = 0;
+    int cooldoownThresholdAcc = 40;
+    int cooldownThresholdGyr = 6;
 
-    float changeFactorGyro = 0.3F;
-    float thresholdGyro = 1.0F;
+    float changeFactorGyro = 0.5F;
+    float thresholdGyro = 0.3F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -88,14 +95,36 @@ public class SensorActivity implements SensorEventListener {
                             || Math.abs(prevResultAccY-sumY)>thresholdAccelerometer
                             || Math.abs(prevResultAccZ-sumZ)>thresholdAccelerometer){
 
+                        clusterAcc.add(sumX);
+                        clusterAcc.add(sumY);
+                        clusterAcc.add(sumZ);
+
+                        isClusteredAcc = true;
+                        clusterCooldownAcc = 0;
+
                         // Threshold was reached
-                        // TODO add the entries to the database
-                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
-                        System.out.println("[Sum AccX] " + sumX);
-                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
-                        System.out.println("[Sum AccY] " + sumY);
-                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
-                        System.out.println("[Sum AccZ] " + sumZ);
+//                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
+//                        System.out.println("[Sum AccX] " + sumX);
+//                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
+//                        System.out.println("[Sum AccY] " + sumY);
+//                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
+//                        System.out.println("[Sum AccZ] " + sumZ);
+                    } else {
+                        if(isClusteredAcc && clusterCooldownAcc>cooldoownThresholdAcc) {
+                            // TODO send three values (x,y,z) to the database
+                            // TODO send first three entries of clusterAcc nice
+                            System.out.println(clusterAcc.get(0) + " clustered value of Acc X");
+                            System.out.println(clusterAcc.get(1) + " clustered value of Acc Y");
+                            System.out.println(clusterAcc.get(2) + " clustered value of Acc Z");
+                            clusterAcc.clear();
+                            isClusteredAcc = false;
+                            clusterCooldownAcc = 0;
+                        }
+                        else if(isClusteredAcc){
+                            clusterCooldownAcc++;
+                            isClusteredAcc = true;
+                        }
+
                     }
                 }
                 break;
@@ -135,15 +164,36 @@ public class SensorActivity implements SensorEventListener {
                             || Math.abs(prevResultGyrY-sumY)>thresholdGyro
                             || Math.abs(prevResultGyrZ-sumZ)>thresholdGyro){
 
-                        // Threshold was reached
-                        // TODO add the entries to the database
+                        clusterGyr.add(sumX);
+                        clusterGyr.add(sumY);
+                        clusterGyr.add(sumZ);
 
-                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
-                        System.out.println("[Sum GyrX] " + sumX);
-                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
-                        System.out.println("[Sum GyrY] " + sumY);
-                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
-                        System.out.println("[Sum GyrZ] " + sumZ);
+                        isClusteredGyr = true;
+                        clusterCooldownGyr = 0;
+
+                        // Threshold was reached
+//                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
+//                        System.out.println("[Sum GyrX] " + sumX);
+//                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
+//                        System.out.println("[Sum GyrY] " + sumY);
+//                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
+//                        System.out.println("[Sum GyrZ] " + sumZ);
+                    } else {
+                        if (isClusteredGyr && clusterCooldownGyr>cooldownThresholdGyr) {
+                            // TODO send three values (x,y,z) to the database
+                            // TODO send the first three entries of clusterGyr
+                            System.out.println(clusterGyr.get(0) + " clustered value of Gyro X");
+                            System.out.println(clusterGyr.get(1) + " clustered value of Gyro Y");
+                            System.out.println(clusterGyr.get(2) + " clustered value of Gyro Z");
+                            clusterGyr.clear();
+                            isClusteredGyr = false;
+                            clusterCooldownGyr = 0;
+                        }
+                        else if(isClusteredGyr){
+                            clusterCooldownGyr++;
+                            isClusteredGyr = true;
+                        }
+
                     }
                 }
                 break;
