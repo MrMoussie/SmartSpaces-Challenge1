@@ -21,12 +21,16 @@ public class SensorActivity implements SensorEventListener {
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
 
+
     float sumX = 0;
     float sumY = 0;
     float sumZ = 0;
 
-    float changeFactor = 0.8F;
-    float threshold = 0.8F;
+    float changeFactorAccelerometer = 0.3F;
+    float thresholdAccelerometer = 0.6F;
+
+    float changeFactorGyro = 0.3F;
+    float thresholdGyro = 0.8F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -77,17 +81,23 @@ public class SensorActivity implements SensorEventListener {
                     prevResultAccY = resultAccY;
                     prevResultAccZ = resultAccZ;
 
-                    resultAccX = (1-changeFactor)*prevResultAccX+changeFactor*sumX;
-                    resultAccY = (1-changeFactor)*prevResultAccY+changeFactor*sumY;
-                    resultAccZ = (1-changeFactor)*prevResultAccZ+changeFactor*sumZ;
+                    resultAccX = (1-changeFactorAccelerometer)*prevResultAccX+changeFactorAccelerometer*sumX;
+                    resultAccY = (1-changeFactorAccelerometer)*prevResultAccY+changeFactorAccelerometer*sumY;
+                    resultAccZ = (1-changeFactorAccelerometer)*prevResultAccZ+changeFactorAccelerometer*sumZ;
 
-                    if(        Math.abs(prevResultAccX-sumX)>threshold
-                            || Math.abs(prevResultAccY-sumY)>threshold
-                            || Math.abs(prevResultAccZ-sumZ)>threshold){
-                        //Threshold is reached send to server or something
+                    if(        Math.abs(prevResultAccX-sumX)>thresholdAccelerometer
+                            || Math.abs(prevResultAccY-sumY)>thresholdAccelerometer
+                            || Math.abs(prevResultAccZ-sumZ)>thresholdAccelerometer){
+
+                        // Threshold was reached
+                        // add the entries to the database
+                        // put a marker on the map
 //                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
+//                        System.out.println("[Sum AccX] " + sumX);
 //                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
-                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
+//                        System.out.println("[Sum AccY] " + sumY);
+//                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
+//                        System.out.println("[Sum AccZ] " + sumZ);
                     }
                 }
                 break;
@@ -119,19 +129,24 @@ public class SensorActivity implements SensorEventListener {
                     prevResultGyrY = resultGyrY;
                     prevResultGyrZ = resultGyrZ;
 
-                    resultGyrX = (1-changeFactor)*prevResultGyrX+changeFactor*sumX;
-                    resultGyrY = (1-changeFactor)*prevResultGyrY+changeFactor*sumY;
-                    resultGyrZ = (1-changeFactor)*prevResultGyrZ+changeFactor*sumZ;
+                    resultGyrX = (1-changeFactorGyro)*prevResultGyrX+changeFactorGyro*sumX;
+                    resultGyrY = (1-changeFactorGyro)*prevResultGyrY+changeFactorGyro*sumY;
+                    resultGyrZ = (1-changeFactorGyro)*prevResultGyrZ+changeFactorGyro*sumZ;
 
-                    if(        Math.abs(prevResultGyrX-sumX)>threshold
-                            || Math.abs(prevResultGyrY-sumY)>threshold
-                            || Math.abs(prevResultGyrZ-sumZ)>threshold){
+                    if(        Math.abs(prevResultGyrX-sumX)>thresholdGyro
+                            || Math.abs(prevResultGyrY-sumY)>thresholdGyro
+                            || Math.abs(prevResultGyrZ-sumZ)>thresholdGyro){
 
+                        // Threshold was reached
                         // add the entries to the database
-                        //Threshold is reached send to server or something
-//                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
-//                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
-//                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
+                        // put a marker on the map
+
+                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
+                        System.out.println("[Sum GyrX] " + sumX);
+                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
+                        System.out.println("[Sum GyrY] " + sumY);
+                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
+                        System.out.println("[Sum GyrZ] " + sumZ);
                     }
                 }
                 break;
