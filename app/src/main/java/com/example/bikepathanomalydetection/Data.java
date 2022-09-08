@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Data {
 
-    private String key;
     private final double longitude;
     private final double latitude;
     private final ArrayList<Float> acc;
@@ -15,14 +14,6 @@ public class Data {
         this.latitude = latitude;
         this.acc = acc;
         this.gyro = gyro;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getKey() {
-        return key;
     }
 
     public double getLongitude() {

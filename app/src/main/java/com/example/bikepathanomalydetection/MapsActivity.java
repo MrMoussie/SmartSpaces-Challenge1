@@ -33,6 +33,9 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class contains the main Google Maps activity and location tracking, as well as other visualisations.
@@ -45,16 +48,20 @@ public class MapsActivity extends AppCompatActivity {
 
     // Maps
     private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
-    private final long STREET_ZOOM = 15; // Zoom in to street
+    private final long STREET_ZOOM = 10; // Zoom in to street
     private final String ANOMALY = "Anomaly";
     private final String ANOMALY_DESCRIPTION = "Unknown!";
-    SupportMapFragment smf;
-    FusedLocationProviderClient client;
+    private SupportMapFragment smf;
+    private FusedLocationProviderClient client;
 
     // Location Requests
     private final long INTERVAL_TIME = 5000; // 1 second
-    LocationRequest locationRequest;
-    Location lastLocation;
+    private final int LOCATION_COMPARE_DISTANCE = 2; // 2 meters
+    private LocationRequest locationRequest;
+    private Location lastLocation;
+
+    // NoSQL
+    private HashMap<Double, Set<Double>> anomalies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,7 @@ public class MapsActivity extends AppCompatActivity {
         client = LocationServices.getFusedLocationProviderClient(this);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        anomalies = new HashMap<>();
 
         Dexter.withContext(getApplicationContext())
                 .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -91,26 +99,17 @@ public class MapsActivity extends AppCompatActivity {
      * This method sets up permissions, tasks and initializes event listeners and managers.
      */
     private void init() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
 
-        Thread thread = new Thread(() -> {
-            NoSQL.makeConnection();
-
-//            ArrayList<Float> arr = new ArrayList<Float>();
-//            arr.add((float) 1);
-//            arr.add((float) 2);
-//            arr.add((float) 3);
-//
-//            NoSQL.saveData(new Data(1, 1, arr, arr));
-        });
-
-        thread.start();
+        // Make Connection with database
+        NoSQL.makeConnection(this);
 
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
 
         // Setup sensor activity
-        SensorEventListener sensorListener = new SensorActivity();
+        SensorEventListener sensorListener = new SensorActivity(this);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -137,10 +136,9 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult.getLastLocation() != null) {
-                    lastLocation = locationResult.getLastLocation();
+//                    if (lastLocation != null && lastLocation.distanceTo(locationResult.getLastLocation()) < LOCATION_COMPARE_DISTANCE) return;
 
-                    //Place current location marker
-                    setAnomalyMark(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    lastLocation = locationResult.getLastLocation();
 
                     //move map camera
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), STREET_ZOOM));
@@ -166,8 +164,43 @@ public class MapsActivity extends AppCompatActivity {
      */
     public void setAnomalyMark(double lat, double lng) {
         if (this.clusterManager != null) {
+
+            // If coordinates don't exist add to anomalies hashmap, return otherwise
+            if (!anomalies.containsKey(lat)) {
+                HashSet<Double> set = new HashSet<>();
+                set.add(lng);
+                anomalies.put(lat, set);
+            } else {
+                Set<Double> set = anomalies.get(lat);
+                if (set.contains(lng)) return;
+                set.add(lng);
+            }
+
             Marker anomalyMark = new Marker(lat, lng, ANOMALY, ANOMALY_DESCRIPTION);
             this.clusterManager.addItem(anomalyMark);
         }
+    }
+
+    public Location getLastLocation() {
+        return this.lastLocation;
+    }
+
+    /**
+     * This function calls the saveData function in the NoSQL class
+     * @param data Data model containing the necessary data
+     */
+    public void saveData(Data data) {
+        if (anomalyExists(data.getLatitude(), data.getLongitude())) return;
+        NoSQL.saveData(data);
+    }
+
+    /**
+     * Checks whether an anomaly already exists on our map
+     * @param lat latitude as a double
+     * @param lng longitude as a double
+     * @return true if it exists, false otherwise
+     */
+    private boolean anomalyExists(double lat, double lng) {
+        return anomalies.containsKey(lat) && anomalies.get(lat).contains(lng);
     }
 }
