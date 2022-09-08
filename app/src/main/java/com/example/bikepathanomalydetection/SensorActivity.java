@@ -21,39 +21,33 @@ public class SensorActivity implements SensorEventListener {
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
 
-    Butterworth accX = null;
-    Butterworth accY = null;
-    Butterworth accZ = null;
-    Butterworth gyrX = null;
-    Butterworth gyrY = null;
-    Butterworth gyrZ = null;
+
 
     float sumX = 0;
     float sumY = 0;
     float sumZ = 0;
 
-    public void filterSetup(){
-        accX = new Butterworth();
-        accY = new Butterworth();
-        accZ = new Butterworth();
-        gyrX = new Butterworth();
-        gyrY = new Butterworth();
-        gyrZ = new Butterworth();
-        gyrX.highPass(20,10,3);
-        gyrY.highPass(20,10,3);
-        gyrZ.highPass(20,10,3);
-        accX.highPass(20,10,3);
-        accY.highPass(20,10,3);
-        accZ.highPass(20,10,3);
-    }
+    float changeFactor = 0.5F;
+    float threshold = 0.5F;
+
+    double prevResultAccX = 0;
+    double prevResultAccY = 0;
+    double prevResultAccZ = 0;
+    double prevResultGyrX = 0;
+    double prevResultGyrY = 0;
+    double prevResultGyrZ = 0;
+
+    double resultAccX = 0;
+    double resultAccY = 0;
+    double resultAccZ = 0;
+    double resultGyrX = 0;
+    double resultGyrY = 0;
+    double resultGyrZ = 0;
+
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor sensor = sensorEvent.sensor;
-        if(accX == null || accY == null || accZ == null ||
-            gyrX == null || gyrY == null || gyrZ == null){
-            filterSetup();
-        }
 
         switch(sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
@@ -75,22 +69,27 @@ public class SensorActivity implements SensorEventListener {
                         }
                     }
 
+                    //convert sum into average
+                    sumX = sumX/arraySize;
+                    sumY = sumY/arraySize;
+                    sumZ = sumZ/arraySize;
 
+                    prevResultAccX = resultAccX;
+                    prevResultAccY = resultAccY;
+                    prevResultAccZ = resultAccZ;
 
-                    if(filterResultGyro.size()<arrayLength) {
-                        filterResultAccelerometer.add(accX.filter(sumX/arraySize));
-                        filterResultAccelerometer.add(accY.filter(sumY/arraySize));
-                        filterResultAccelerometer.add(accZ.filter(sumZ/arraySize));
+                    resultAccX = (1-changeFactor)*prevResultAccX+changeFactor*sumX;
+                    resultAccY = (1-changeFactor)*prevResultAccY+changeFactor*sumY;
+                    resultAccZ = (1-changeFactor)*prevResultAccZ+changeFactor*sumZ;
+
+                    if(        prevResultAccX-sumX>threshold
+                            || prevResultAccY-sumY>threshold
+                            || prevResultAccZ-sumZ>threshold){
+                        //Threshold is reached send to server or something
+                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
+                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
+                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
                     }
-                    System.out.println(accX.filter(sumX) + "   " + sumX + " [accelerometer X]");
-                    System.out.println(accY.filter(sumY) + "   " + sumY + " [accelerometer Y]");
-                    System.out.println(accZ.filter(sumZ) + "   " + sumZ + " [accelerometer Z]");
-
-//                    try {
-//                        Thread.sleep(2000);
-//                    } catch (InterruptedException e) {
-//
-//                    }
                 }
                 break;
             case Sensor.TYPE_GYROSCOPE:
@@ -112,15 +111,27 @@ public class SensorActivity implements SensorEventListener {
                         }
                     }
 
-                    if(filterResultGyro.size()<arrayLength) {
-                        filterResultGyro.add(gyrX.filter(sumX/arraySize));
-                        filterResultGyro.add(gyrY.filter(sumY/arraySize));
-                        filterResultGyro.add(gyrZ.filter(sumZ/arraySize));
-                    }
+                    //convert sum into average
+                    sumX = sumX/arraySize;
+                    sumY = sumY/arraySize;
+                    sumZ = sumZ/arraySize;
 
-                    System.out.println(accX.filter(sumX) + "   " + sumX);
-                    System.out.println(accY.filter(sumY) + "   " + sumY);
-                    System.out.println(accZ.filter(sumZ) + "   " + sumZ);
+                    prevResultGyrX = resultGyrX;
+                    prevResultGyrY = resultGyrY;
+                    prevResultGyrZ = resultGyrZ;
+
+                    resultGyrX = (1-changeFactor)*prevResultGyrX+changeFactor*sumX;
+                    resultGyrY = (1-changeFactor)*prevResultGyrY+changeFactor*sumY;
+                    resultGyrZ = (1-changeFactor)*prevResultGyrZ+changeFactor*sumZ;
+
+                    if(        prevResultGyrX-sumX>threshold
+                            || prevResultGyrY-sumY>threshold
+                            || prevResultGyrZ-sumZ>threshold){
+                        //Threshold is reached send to server or something
+                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
+                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
+                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
+                    }
                 }
                 break;
         }
