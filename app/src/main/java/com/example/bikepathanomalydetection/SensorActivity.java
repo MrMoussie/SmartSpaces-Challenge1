@@ -29,7 +29,7 @@ public class SensorActivity implements SensorEventListener {
     float sumZ = 0;
 
     float changeFactorAccelerometer = 0.6F;
-    float thresholdAccelerometer = 1.0F;
+    float thresholdAccelerometer = 2.2F;
     boolean isClusteredAcc = false;
     boolean isClusteredGyr = false;
     int clusterCooldownAcc = 0;

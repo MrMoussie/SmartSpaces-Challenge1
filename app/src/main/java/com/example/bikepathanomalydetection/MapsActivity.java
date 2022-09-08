@@ -48,7 +48,7 @@ public class MapsActivity extends AppCompatActivity {
 
     // Maps
     private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
-    private final long STREET_ZOOM = 10; // Zoom in to street
+    private final long STREET_ZOOM = 18; // Zoom in to street
     private final String ANOMALY = "Anomaly";
     private final String ANOMALY_DESCRIPTION = "Unknown!";
     private SupportMapFragment smf;
