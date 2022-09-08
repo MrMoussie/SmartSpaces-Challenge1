@@ -26,17 +26,17 @@ public class SensorActivity implements SensorEventListener {
     float sumY = 0;
     float sumZ = 0;
 
-    float changeFactorAccelerometer = 0.65F;
-    float thresholdAccelerometer = 1.5F;
+    float changeFactorAccelerometer = 0.6F;
+    float thresholdAccelerometer = 1.0F;
     boolean isClusteredAcc = false;
     boolean isClusteredGyr = false;
     int clusterCooldownAcc = 0;
     int clusterCooldownGyr = 0;
-    int cooldoownThresholdAcc = 42;
+    int cooldoownThresholdAcc = 40;
     int cooldownThresholdGyr = 6;
 
     float changeFactorGyro = 0.5F;
-    float thresholdGyro = 0.6F;
+    float thresholdGyro = 0.3F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -118,6 +118,7 @@ public class SensorActivity implements SensorEventListener {
                             System.out.println(clusterAcc.get(2) + " clustered value of Acc Z");
                             clusterAcc.clear();
                             isClusteredAcc = false;
+                            clusterCooldownAcc = 0;
                         }
                         else if(isClusteredAcc){
                             clusterCooldownAcc++;
@@ -186,6 +187,7 @@ public class SensorActivity implements SensorEventListener {
                             System.out.println(clusterGyr.get(2) + " clustered value of Gyro Z");
                             clusterGyr.clear();
                             isClusteredGyr = false;
+                            clusterCooldownGyr = 0;
                         }
                         else if(isClusteredGyr){
                             clusterCooldownGyr++;
