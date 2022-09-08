@@ -21,14 +21,12 @@ public class SensorActivity implements SensorEventListener {
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
 
-
-
     float sumX = 0;
     float sumY = 0;
     float sumZ = 0;
 
-    float changeFactor = 0.5F;
-    float threshold = 0.5F;
+    float changeFactor = 0.8F;
+    float threshold = 0.8F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -43,6 +41,7 @@ public class SensorActivity implements SensorEventListener {
     double resultGyrX = 0;
     double resultGyrY = 0;
     double resultGyrZ = 0;
+
 
 
     @Override
@@ -82,12 +81,12 @@ public class SensorActivity implements SensorEventListener {
                     resultAccY = (1-changeFactor)*prevResultAccY+changeFactor*sumY;
                     resultAccZ = (1-changeFactor)*prevResultAccZ+changeFactor*sumZ;
 
-                    if(        prevResultAccX-sumX>threshold
-                            || prevResultAccY-sumY>threshold
-                            || prevResultAccZ-sumZ>threshold){
+                    if(        Math.abs(prevResultAccX-sumX)>threshold
+                            || Math.abs(prevResultAccY-sumY)>threshold
+                            || Math.abs(prevResultAccZ-sumZ)>threshold){
                         //Threshold is reached send to server or something
-                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
-                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
+//                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
+//                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
                         System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
                     }
                 }
@@ -124,13 +123,15 @@ public class SensorActivity implements SensorEventListener {
                     resultGyrY = (1-changeFactor)*prevResultGyrY+changeFactor*sumY;
                     resultGyrZ = (1-changeFactor)*prevResultGyrZ+changeFactor*sumZ;
 
-                    if(        prevResultGyrX-sumX>threshold
-                            || prevResultGyrY-sumY>threshold
-                            || prevResultGyrZ-sumZ>threshold){
+                    if(        Math.abs(prevResultGyrX-sumX)>threshold
+                            || Math.abs(prevResultGyrY-sumY)>threshold
+                            || Math.abs(prevResultGyrZ-sumZ)>threshold){
+
+                        // add the entries to the database
                         //Threshold is reached send to server or something
-                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
-                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
-                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
+//                        System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
+//                        System.out.println("[Dif GyrY] " + (prevResultGyrY-sumY));
+//                        System.out.println("[Dif GyrZ] " + (prevResultGyrZ-sumZ));
                     }
                 }
                 break;
