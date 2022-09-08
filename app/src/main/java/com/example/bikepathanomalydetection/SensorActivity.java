@@ -16,6 +16,7 @@ public class SensorActivity implements SensorEventListener {
     int oldestIndexAccelerometer = 0;
     private final float[] accelerometerValues = new float[3*arraySize];
     int oldestIndexGyro = 0;
+    int arrayLength = 300;
     private final float[] gyroscopeValues = new float[3*arraySize];
     private final ArrayList<Double> filterResultAccelerometer = new ArrayList<>();
     private final ArrayList<Double> filterResultGyro = new ArrayList<>();
@@ -38,12 +39,12 @@ public class SensorActivity implements SensorEventListener {
         gyrX = new Butterworth();
         gyrY = new Butterworth();
         gyrZ = new Butterworth();
-        gyrX.highPass(20,10,1);
-        gyrY.highPass(20,10,1);
-        gyrZ.highPass(20,10,1);
-        accX.highPass(20,10,1);
-        accY.highPass(20,10,1);
-        accZ.highPass(20,10,1);
+        gyrX.highPass(20,10,3);
+        gyrY.highPass(20,10,3);
+        gyrZ.highPass(20,10,3);
+        accX.highPass(20,10,3);
+        accY.highPass(20,10,3);
+        accZ.highPass(20,10,3);
     }
 
     @Override
@@ -76,14 +77,20 @@ public class SensorActivity implements SensorEventListener {
 
 
 
-                    if(filterResultGyro.size()<30) {
-                        filterResultAccelerometer.add(accX.filter(sumX));
-                        filterResultAccelerometer.add(accY.filter(sumY));
-                        filterResultAccelerometer.add(accZ.filter(sumZ));
+                    if(filterResultGyro.size()<arrayLength) {
+                        filterResultAccelerometer.add(accX.filter(sumX/arraySize));
+                        filterResultAccelerometer.add(accY.filter(sumY/arraySize));
+                        filterResultAccelerometer.add(accZ.filter(sumZ/arraySize));
                     }
-                    System.out.println(accX.filter(sumX) + "   " + sumX);
-                    System.out.println(accY.filter(sumY) + "   " + sumY);
-                    System.out.println(accZ.filter(sumZ) + "   " + sumZ);
+                    System.out.println(accX.filter(sumX) + "   " + sumX + " [accelerometer X]");
+                    System.out.println(accY.filter(sumY) + "   " + sumY + " [accelerometer Y]");
+                    System.out.println(accZ.filter(sumZ) + "   " + sumZ + " [accelerometer Z]");
+
+//                    try {
+//                        Thread.sleep(2000);
+//                    } catch (InterruptedException e) {
+//
+//                    }
                 }
                 break;
             case Sensor.TYPE_GYROSCOPE:
@@ -105,10 +112,10 @@ public class SensorActivity implements SensorEventListener {
                         }
                     }
 
-                    if(filterResultGyro.size()<30) {
-                        filterResultGyro.add(gyrX.filter(sumX));
-                        filterResultGyro.add(gyrY.filter(sumY));
-                        filterResultGyro.add(gyrZ.filter(sumZ));
+                    if(filterResultGyro.size()<arrayLength) {
+                        filterResultGyro.add(gyrX.filter(sumX/arraySize));
+                        filterResultGyro.add(gyrY.filter(sumY/arraySize));
+                        filterResultGyro.add(gyrZ.filter(sumZ/arraySize));
                     }
 
                     System.out.println(accX.filter(sumX) + "   " + sumX);
