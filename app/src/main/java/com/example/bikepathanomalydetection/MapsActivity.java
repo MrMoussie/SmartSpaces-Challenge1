@@ -55,7 +55,7 @@ public class MapsActivity extends AppCompatActivity {
     private FusedLocationProviderClient client;
 
     // Location Requests
-    private final long INTERVAL_TIME = 5000; // 1 second
+    private final long INTERVAL_TIME = 5000; // 5 seconds
     private final int LOCATION_COMPARE_DISTANCE = 2; // 2 meters
     private LocationRequest locationRequest;
     private Location lastLocation;
