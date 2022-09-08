@@ -91,20 +91,11 @@ public class MapsActivity extends AppCompatActivity {
      * This method sets up permissions, tasks and initializes event listeners and managers.
      */
     private void init() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
 
-        Thread thread = new Thread(() -> {
-            NoSQL.makeConnection();
-
-//            ArrayList<Float> arr = new ArrayList<Float>();
-//            arr.add((float) 1);
-//            arr.add((float) 2);
-//            arr.add((float) 3);
-//
-//            NoSQL.saveData(new Data(1, 1, arr, arr));
-        });
-
-        thread.start();
+        // Make Connection with database
+        NoSQL.makeConnection();
 
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(location -> smf.getMapAsync(this::onMapReady));
@@ -169,5 +160,13 @@ public class MapsActivity extends AppCompatActivity {
             Marker anomalyMark = new Marker(lat, lng, ANOMALY, ANOMALY_DESCRIPTION);
             this.clusterManager.addItem(anomalyMark);
         }
+    }
+
+    /**
+     * This function calls the saveData function in the NoSQL
+     * @param data
+     */
+    public void saveData(Data data) {
+        NoSQL.saveData(data);
     }
 }

@@ -51,6 +51,7 @@ public class NoSQL {
      * @param data Data object to be saved
      */
     public static void saveData(Data data) {
+        System.out.println(database);
         if (database != null) {
             DatabaseReference ref = database.getReference().push();
             ref.setValue(data);
