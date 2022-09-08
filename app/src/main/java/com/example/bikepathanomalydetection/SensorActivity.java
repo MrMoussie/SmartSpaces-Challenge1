@@ -4,7 +4,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import java.util.ArrayList;
-import uk.me.berndporr.iirj.*;
 
 /**
  * This class implements the SensorEventListener class and listens for sensor events.
@@ -27,10 +26,10 @@ public class SensorActivity implements SensorEventListener {
     float sumZ = 0;
 
     float changeFactorAccelerometer = 0.3F;
-    float thresholdAccelerometer = 0.6F;
+    float thresholdAccelerometer = 0.8F;
 
     float changeFactorGyro = 0.3F;
-    float thresholdGyro = 0.8F;
+    float thresholdGyro = 1.0F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -90,14 +89,13 @@ public class SensorActivity implements SensorEventListener {
                             || Math.abs(prevResultAccZ-sumZ)>thresholdAccelerometer){
 
                         // Threshold was reached
-                        // add the entries to the database
-                        // put a marker on the map
-//                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
-//                        System.out.println("[Sum AccX] " + sumX);
-//                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
-//                        System.out.println("[Sum AccY] " + sumY);
-//                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
-//                        System.out.println("[Sum AccZ] " + sumZ);
+                        // TODO add the entries to the database
+                        System.out.println("[Dif AccX] " + (prevResultAccX-sumX));
+                        System.out.println("[Sum AccX] " + sumX);
+                        System.out.println("[Dif AccY] " + (prevResultAccY-sumY));
+                        System.out.println("[Sum AccY] " + sumY);
+                        System.out.println("[Dif AccZ] " + (prevResultAccZ-sumZ));
+                        System.out.println("[Sum AccZ] " + sumZ);
                     }
                 }
                 break;
@@ -138,8 +136,7 @@ public class SensorActivity implements SensorEventListener {
                             || Math.abs(prevResultGyrZ-sumZ)>thresholdGyro){
 
                         // Threshold was reached
-                        // add the entries to the database
-                        // put a marker on the map
+                        // TODO add the entries to the database
 
                         System.out.println("[Dif GyrX] " + (prevResultGyrX-sumX));
                         System.out.println("[Sum GyrX] " + sumX);
