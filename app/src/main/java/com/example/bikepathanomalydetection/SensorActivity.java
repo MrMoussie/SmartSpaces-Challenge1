@@ -112,7 +112,7 @@ public class SensorActivity implements SensorEventListener {
                     } else {
                         if(isClusteredAcc && clusterCooldownAcc>cooldoownThresholdAcc) {
                             // TODO send three values (x,y,z) to the database
-                            // TODO send first three entries of clusterAcc
+                            // TODO send first three entries of clusterAcc nice
                             System.out.println(clusterAcc.get(0) + " clustered value of Acc X");
                             System.out.println(clusterAcc.get(1) + " clustered value of Acc Y");
                             System.out.println(clusterAcc.get(2) + " clustered value of Acc Z");
