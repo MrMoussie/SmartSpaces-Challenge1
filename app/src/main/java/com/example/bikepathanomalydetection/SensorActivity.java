@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class SensorActivity implements SensorEventListener {
 
     //AveragingVariables:
-    final int arraySize = 7;
+    final int arraySize = 20;
     int oldestIndexAccelerometer = 0;
     private final float[] accelerometerValues = new float[3*arraySize];
     int oldestIndexGyro = 0;
@@ -27,7 +27,7 @@ public class SensorActivity implements SensorEventListener {
     float sumZ = 0;
 
     float changeFactorAccelerometer = 0.65F;
-    float thresholdAccelerometer = 0.85F;
+    float thresholdAccelerometer = 1.5F;
     boolean isClusteredAcc = false;
     boolean isClusteredGyr = false;
     int clusterCooldownAcc = 0;
@@ -36,7 +36,7 @@ public class SensorActivity implements SensorEventListener {
     int cooldownThresholdGyr = 6;
 
     float changeFactorGyro = 0.5F;
-    float thresholdGyro = 1.0F;
+    float thresholdGyro = 0.6F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
