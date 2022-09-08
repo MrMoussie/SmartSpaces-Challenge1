@@ -32,6 +32,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.util.ArrayList;
+
 /**
  * This class contains the main Google Maps activity and location tracking, as well as other visualisations.
  */
@@ -44,6 +46,8 @@ public class MapsActivity extends AppCompatActivity {
     // Maps
     private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
     private final long STREET_ZOOM = 15; // Zoom in to street
+    private final String ANOMALY = "Anomaly";
+    private final String ANOMALY_DESCRIPTION = "Unknown!";
     SupportMapFragment smf;
     FusedLocationProviderClient client;
 
@@ -90,11 +94,7 @@ public class MapsActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
 
         Thread thread = new Thread(() -> {
-            try  {
-                System.out.println(SQL.getConnection());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            NoSQL.makeConnection();
         });
 
         thread.start();
@@ -159,7 +159,7 @@ public class MapsActivity extends AppCompatActivity {
      */
     public void setAnomalyMark(double lat, double lng) {
         if (this.clusterManager != null) {
-            Marker anomalyMark = new Marker(lat, lng, "Anomaly", "Unknown");
+            Marker anomalyMark = new Marker(lat, lng, ANOMALY, ANOMALY_DESCRIPTION);
             this.clusterManager.addItem(anomalyMark);
         }
     }
