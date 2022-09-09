@@ -48,14 +48,14 @@ public class MapsActivity extends AppCompatActivity {
 
     // Maps
     private final long CITY_ZOOM = 10; // Zoom in to surrounding cities
-    private final long STREET_ZOOM = 10; // Zoom in to street
+    private final long STREET_ZOOM = 18; // Zoom in to street
     private final String ANOMALY = "Anomaly";
     private final String ANOMALY_DESCRIPTION = "Unknown!";
     private SupportMapFragment smf;
     private FusedLocationProviderClient client;
 
     // Location Requests
-    private final long INTERVAL_TIME = 5000; // 1 second
+    private final long INTERVAL_TIME = 5000; // 5 seconds
     private final int LOCATION_COMPARE_DISTANCE = 2; // 2 meters
     private LocationRequest locationRequest;
     private Location lastLocation;
@@ -181,6 +181,10 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Returns last known location of the device
+     * @return Location object
+     */
     public Location getLastLocation() {
         return this.lastLocation;
     }

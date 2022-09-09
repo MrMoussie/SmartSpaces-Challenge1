@@ -29,16 +29,16 @@ public class SensorActivity implements SensorEventListener {
     float sumZ = 0;
 
     float changeFactorAccelerometer = 0.6F;
-    float thresholdAccelerometer = 1.0F;
+    float thresholdAccelerometer = 2.2F;
     boolean isClusteredAcc = false;
     boolean isClusteredGyr = false;
     int clusterCooldownAcc = 0;
     int clusterCooldownGyr = 0;
     int cooldoownThresholdAcc = 40;
-    int cooldownThresholdGyr = 6;
+    int cooldownThresholdGyr = 15;
 
-    float changeFactorGyro = 0.5F;
-    float thresholdGyro = 0.3F;
+    float changeFactorGyro = 0.6F;
+    float thresholdGyro = 0.35F;
 
     double prevResultAccX = 0;
     double prevResultAccY = 0;
@@ -225,7 +225,6 @@ public class SensorActivity implements SensorEventListener {
                         }
                         else if(isClusteredGyr){
                             clusterCooldownGyr++;
-                            isClusteredGyr = true;
                         }
 
                     }
